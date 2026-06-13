@@ -191,7 +191,7 @@ select_java() {
         elif command -v /opt/java/21/bin/java &>/dev/null; then
             java_cmd="/opt/java/21/bin/java"
         fi
-        log "Menggunakan Java 21 (MC 1.21+)"
+        log "Menggunakan Java 21 (MC 1.21+)" >&2
     elif [ "$major_version" -ge 18 ] 2>/dev/null; then
         # MC 1.18-1.20.4 - Java 17
         if command -v /usr/lib/jvm/java-17-openjdk-amd64/bin/java &>/dev/null; then
@@ -199,10 +199,10 @@ select_java() {
         elif command -v /opt/java/17/bin/java &>/dev/null; then
             java_cmd="/opt/java/17/bin/java"
         fi
-        log "Menggunakan Java 17 (MC 1.18-1.20.4)"
+        log "Menggunakan Java 17 (MC 1.18-1.20.4)" >&2
     elif [ "$major_version" -ge 17 ] 2>/dev/null; then
         # MC 1.17 - Java 16+
-        log "Menggunakan Java default (MC 1.17)"
+        log "Menggunakan Java default (MC 1.17)" >&2
     else
         # MC 1.16 ke bawah - Java 8/11
         if command -v /usr/lib/jvm/java-11-openjdk-amd64/bin/java &>/dev/null; then
@@ -210,7 +210,7 @@ select_java() {
         elif command -v /opt/java/11/bin/java &>/dev/null; then
             java_cmd="/opt/java/11/bin/java"
         fi
-        log "Menggunakan Java 11 (MC 1.16 ke bawah)"
+        log "Menggunakan Java 11 (MC 1.16 ke bawah)" >&2
     fi
 
     echo "$java_cmd"

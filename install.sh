@@ -63,10 +63,19 @@ get_latest_minecraft_version() {
 
 resolve_mc_version() {
     if [ "$MC_VERSION" = "latest" ]; then
-        MC_VERSION=$(get_latest_minecraft_version)
-        log "Versi Minecraft terbaru: $MC_VERSION"
+        if [ "$SERVER_TYPE" = "paper" ]; then
+            MC_VERSION=$(curl -sSL "https://api.papermc.io/v2/projects/paper" 2>/dev/null | jq -r '.versions[-1]')
+        elif [ "$SERVER_TYPE" = "purpur" ]; then
+            MC_VERSION=$(curl -sSL "https://api.purpurmc.org/v2/purpur" 2>/dev/null | jq -r '.versions[-1]')
+        elif [ "$SERVER_TYPE" = "waterfall" ]; then
+            MC_VERSION=$(curl -sSL "https://api.papermc.io/v2/projects/waterfall" 2>/dev/null | jq -r '.versions[-1]')
+        elif [ "$SERVER_TYPE" = "velocity" ]; then
+            MC_VERSION=$(curl -sSL "https://api.papermc.io/v2/projects/velocity" 2>/dev/null | jq -r '.versions[-1]')
+        else
+            MC_VERSION=$(get_latest_minecraft_version)
+        fi
+        log "Versi terbaru yang tersedia untuk $SERVER_TYPE: $MC_VERSION"
     fi
-    echo "$MC_VERSION"
 }
 
 check_java() {

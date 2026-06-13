@@ -603,6 +603,38 @@ main() {
         *)
             write_eula
             write_server_properties
+            
+            # [WORKAROUND] Auto-install Custom Plugins
+            if [[ "$SERVER_TYPE" == "paper" || "$SERVER_TYPE" == "purpur" || "$SERVER_TYPE" == "spigot" ]]; then
+                log "Memeriksa custom plugins di repositori GitHub..."
+                mkdir -p plugins
+                
+                # Gunakan GitHub API untuk mendapatkan daftar file di folder plugin
+                local api_url="https://api.github.com/repos/muhammadtsaqf/egg-mc/contents/plugin"
+                local plugin_list
+                plugin_list=$(curl -sSL "$api_url" 2>/dev/null)
+                
+                if echo "$plugin_list" | grep -q '"download_url"'; then
+                    echo "$plugin_list" | jq -c '.[]' | while read -r item; do
+                        local p_name
+                        local p_url
+                        p_name=$(echo "$item" | jq -r '.name')
+                        p_url=$(echo "$item" | jq -r '.download_url')
+                        
+                        if [[ "$p_name" == *.jar ]]; then
+                            if [ ! -f "plugins/$p_name" ]; then
+                                log "Mendownload plugin: $p_name..."
+                                curl -sSL -o "plugins/$p_name" "$p_url"
+                            else
+                                log "Plugin $p_name sudah ada, melewati unduhan."
+                            fi
+                        fi
+                    done
+                    success "Selesai memproses auto-install plugin!"
+                else
+                    warn "Tidak dapat membaca daftar plugin dari GitHub atau folder kosong."
+                fi
+            fi
             ;;
     esac
 

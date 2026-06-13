@@ -346,7 +346,17 @@ main() {
 
     # Mulai Web Panel Frontend jika diaktifkan
     if [ "${WEB_PANEL_ENABLED,,}" == "true" ]; then
-        log "Memulai Web Frontend (Node.js) di background (port 8080)..."
+        log "Mempersiapkan Web Frontend (Node.js)..."
+        
+        # Pindahkan web folder ke /home/container/web agar pengguna bisa mengedit HTML/CSS
+        if [ ! -d "/home/container/web" ]; then
+            log "Mengcopy default web panel ke /home/container/web..."
+            cp -r /opt/minecraft-web /home/container/web
+            # Pastikan permission benar
+            chown -R container:container /home/container/web 2>/dev/null || true
+        fi
+
+        log "Memulai Web Panel di background..."
         # Export semua variable penting agar terbaca oleh Node.js
         export SERVER_PORT="${SERVER_PORT:-25565}"
         export SERVER_HOST="${SERVER_HOST:-127.0.0.1}"
@@ -356,8 +366,13 @@ main() {
         export WEB_ADMIN_USERNAME="${WEB_ADMIN_USERNAME:-admin}"
         export WEB_ADMIN_PASSWORD="${WEB_ADMIN_PASSWORD:-admin123}"
         
-        # Pindah ke web direktori, jalankan npm start di background, lalu kembali
-        (cd /opt/minecraft-web && npm start > /dev/null 2>&1 &)
+        # Jika .env belum ada, copy dari template
+        if [ ! -f "/home/container/web/.env" ] && [ -f "/opt/minecraft-web/.env" ]; then
+            cp /opt/minecraft-web/.env /home/container/web/.env
+        fi
+        
+        # Pindah ke direktori web PENGGUNA, jalankan npm start di background, lalu kembali
+        (cd /home/container/web && npm start > /dev/null 2>&1 &)
     fi
 
     # Pilih Java yang tepat

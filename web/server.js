@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const util = require('minecraft-server-util');
 const path = require('path');
@@ -5,7 +6,7 @@ const session = require('express-session');
 const fs = require('fs');
 
 const app = express();
-const PORT = 8080;
+const PORT = process.env.WEB_PORT || 8080;
 
 // Environment Variables
 const MC_PORT = parseInt(process.env.SERVER_PORT) || 25565;

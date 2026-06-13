@@ -15,11 +15,11 @@
     "pid_limit"
   ],
   "docker_images": {
-    "Java 21 (MC 1.20.5+) [Recommended]": "docker.io/azzamdev17/minecraft-egg:java21",
-    "Java 17 (MC 1.17 - 1.20.4)": "docker.io/azzamdev17/minecraft-egg:java17",
-    "Java 11 (MC 1.12 - 1.16.5)": "docker.io/azzamdev17/minecraft-egg:java11",
-    "Java 8 (MC 1.8 - 1.12.2)": "docker.io/azzamdev17/minecraft-egg:java8",
-    "Latest (Auto-detect)": "docker.io/azzamdev17/minecraft-egg:latest"
+    "Java 21 (MC 1.20.5+) [Recommended]": "docker.io/zzamcode17/minecraft-egg:java21",
+    "Java 17 (MC 1.17 - 1.20.4)": "docker.io/zzamcode17/minecraft-egg:java17",
+    "Java 11 (MC 1.12 - 1.16.5)": "docker.io/zzamcode17/minecraft-egg:java11",
+    "Java 8 (MC 1.8 - 1.12.2)": "docker.io/zzamcode17/minecraft-egg:java8",
+    "Latest (Auto-detect)": "docker.io/zzamcode17/minecraft-egg:latest"
   },
   "file_denylist": [],
   "startup": "bash /entrypoint.sh",
@@ -32,7 +32,7 @@
   "scripts": {
     "installation": {
       "script": "#!/bin/bash\r\n\r\n# Pterodactyl Egg - Minecraft Universal Install Script\r\n# Dijalankan oleh Wings saat instalasi server\r\n\r\nset -euo pipefail\r\n\r\napt-get update -qq\r\napt-get install -y -qq curl wget jq git unzip\r\n\r\nexport SERVER_TYPE=\"${SERVER_TYPE:-paper}\"\r\nexport MC_VERSION=\"${MC_VERSION:-latest}\"\r\nexport BUILD_NUMBER=\"${BUILD_NUMBER:-latest}\"\r\nexport FORGE_VERSION=\"${FORGE_VERSION:-latest}\"\r\nexport FABRIC_VERSION=\"${FABRIC_VERSION:-latest}\"\r\nexport QUILT_VERSION=\"${QUILT_VERSION:-latest}\"\r\n\r\nbash /mnt/user-data/scripts/install.sh",
-      "container": "docker.io/azzamdev17/minecraft-egg:latest",
+      "container": "docker.io/zzamcode17/minecraft-egg:latest",
       "entrypoint": "bash"
     }
   },

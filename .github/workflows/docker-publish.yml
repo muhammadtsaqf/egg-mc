@@ -27,7 +27,7 @@ concurrency:
 
 env:
   # Username Docker Hub
-  DOCKER_USERNAME: azzamdev17
+  DOCKER_USERNAME: zzamcode17
   IMAGE_NAME: minecraft-egg
   REGISTRY: docker.io
 
@@ -147,7 +147,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            azzamdev17/${{ env.IMAGE_NAME }}
+            zzamcode17/${{ env.IMAGE_NAME }}
           tags: |
             # Tag berdasarkan versi Java
             type=raw,value=${{ matrix.tag_suffix }}
@@ -290,8 +290,8 @@ jobs:
           echo "| Build | ${{ needs.build.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 🐳 Image tersedia di:" >> $GITHUB_STEP_SUMMARY
-          echo "- \`docker pull azzamdev17/minecraft-egg:latest\`" >> $GITHUB_STEP_SUMMARY
-          echo "- \`docker pull azzamdev17/minecraft-egg:java21\`" >> $GITHUB_STEP_SUMMARY
-          echo "- \`docker pull azzamdev17/minecraft-egg:java17\`" >> $GITHUB_STEP_SUMMARY
-          echo "- \`docker pull azzamdev17/minecraft-egg:java11\`" >> $GITHUB_STEP_SUMMARY
-          echo "- \`docker pull azzamdev17/minecraft-egg:java8\`" >> $GITHUB_STEP_SUMMARY
+          echo "- \`docker pull zzamcode17/minecraft-egg:latest\`" >> $GITHUB_STEP_SUMMARY
+          echo "- \`docker pull zzamcode17/minecraft-egg:java21\`" >> $GITHUB_STEP_SUMMARY
+          echo "- \`docker pull zzamcode17/minecraft-egg:java17\`" >> $GITHUB_STEP_SUMMARY
+          echo "- \`docker pull zzamcode17/minecraft-egg:java11\`" >> $GITHUB_STEP_SUMMARY
+          echo "- \`docker pull zzamcode17/minecraft-egg:java8\`" >> $GITHUB_STEP_SUMMARY

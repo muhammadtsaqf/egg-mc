@@ -70,17 +70,17 @@ Images tersedia di Docker Hub dengan berbagai tag:
 
 ```bash
 # Java 21 - Untuk Minecraft 1.20.5+ (RECOMMENDED)
-docker pull azzamdev17/minecraft-egg:latest
-docker pull azzamdev17/minecraft-egg:java21
+docker pull zzamcode17/minecraft-egg:latest
+docker pull zzamcode17/minecraft-egg:java21
 
 # Java 17 - Untuk Minecraft 1.17 - 1.20.4
-docker pull azzamdev17/minecraft-egg:java17
+docker pull zzamcode17/minecraft-egg:java17
 
 # Java 11 - Untuk Minecraft 1.12 - 1.16.5
-docker pull azzamdev17/minecraft-egg:java11
+docker pull zzamcode17/minecraft-egg:java11
 
 # Java 8 - Untuk Minecraft 1.8 - 1.12.2
-docker pull azzamdev17/minecraft-egg:java8
+docker pull zzamcode17/minecraft-egg:java8
 ```
 
 ### Pilih Java yang Tepat

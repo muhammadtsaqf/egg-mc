@@ -58,15 +58,6 @@ RUN apt-get update -qq && \
         # Python untuk beberapa tools
         python3 \
         python3-pip && \
-    \
-    # Install Cloudflared
-    wget -q https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -O /usr/local/bin/cloudflared && \
-    chmod +x /usr/local/bin/cloudflared && \
-    \
-    # Install Node.js untuk Web Panel
-    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install -y nodejs \
-    && \
     # Setup locale Indonesia
     locale-gen id_ID.UTF-8 && \
     update-locale LANG=id_ID.UTF-8 && \
@@ -122,12 +113,7 @@ RUN useradd -d /home/container -m container --uid 1000 --shell /bin/bash
 # ============================================================
 COPY --chown=container:container entrypoint.sh /entrypoint.sh
 COPY --chown=container:container install.sh /install.sh
-COPY --chown=container:container web /opt/minecraft-web
-
-RUN chmod +x /entrypoint.sh /install.sh && \
-    cd /opt/minecraft-web && \
-    npm install && \
-    chown -R container:container /opt/minecraft-web
+RUN chmod +x /entrypoint.sh /install.sh
 
 # ============================================================
 # WORKING DIRECTORY

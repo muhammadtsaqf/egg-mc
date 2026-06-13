@@ -166,22 +166,7 @@ apply_server_config() {
     success "server.properties berhasil diupdate"
 }
 
-# ============================================================
-# CLOUDFLARE TUNNEL
-# ============================================================
-start_cloudflare_tunnel() {
-    if command -v cloudflared &>/dev/null; then
-        if [ -n "${CF_WEB_TUNNEL_TOKEN:-}" ]; then
-            log "Menjalankan Cloudflare Tunnel (Web Panel) di background..."
-            mkdir -p /home/container/logs
-            cloudflared tunnel run --token "$CF_WEB_TUNNEL_TOKEN" > /home/container/logs/cloudflared-web.log 2>&1 &
-        fi
-    else
-        if [ -n "${CF_WEB_TUNNEL_TOKEN:-}" ]; then
-            warn "Token Cloudflare terdeteksi, tetapi binary 'cloudflared' tidak ditemukan di dalam sistem!"
-        fi
-    fi
-}
+
 
 # ============================================================
 # DETEKSI JAVA VERSION YANG TEPAT
@@ -362,39 +347,7 @@ main() {
     # Apply konfigurasi server (host, port, motd, online-mode)
     apply_server_config
 
-    # Mulai Cloudflare Tunnel jika token tersedia
-    start_cloudflare_tunnel
 
-    # Mulai Web Panel Frontend jika diaktifkan
-    if [ "${WEB_PANEL_ENABLED,,}" == "true" ]; then
-        log "Mempersiapkan Web Frontend (Node.js)..."
-        
-        # Pindahkan web folder ke /home/container/web agar pengguna bisa mengedit HTML/CSS
-        if [ ! -d "/home/container/web" ]; then
-            log "Mengcopy default web panel ke /home/container/web..."
-            cp -r /opt/minecraft-web /home/container/web
-            # Pastikan permission benar
-            chown -R container:container /home/container/web 2>/dev/null || true
-        fi
-
-        log "Memulai Web Panel di background..."
-        # Export semua variable penting agar terbaca oleh Node.js
-        export SERVER_PORT="${SERVER_PORT:-25565}"
-        export SERVER_HOST="${SERVER_HOST:-127.0.0.1}"
-        export MC_VERSION="${MC_VERSION:-latest}"
-        export SERVER_TYPE="${SERVER_TYPE:-vanilla}"
-        export SERVER_MOTD="${SERVER_MOTD:-Minecraft Server}"
-        export WEB_ADMIN_USERNAME="${WEB_ADMIN_USERNAME:-admin}"
-        export WEB_ADMIN_PASSWORD="${WEB_ADMIN_PASSWORD:-admin123}"
-        
-        # Jika .env belum ada, copy dari template
-        if [ ! -f "/home/container/web/.env" ] && [ -f "/opt/minecraft-web/.env" ]; then
-            cp /opt/minecraft-web/.env /home/container/web/.env
-        fi
-        
-        # Pindah ke direktori web PENGGUNA, jalankan npm start di background, lalu kembali
-        (cd /home/container/web && npm start > /dev/null 2>&1 &)
-    fi
 
     # Pilih Java yang tepat
     JAVA_CMD=$(select_java)

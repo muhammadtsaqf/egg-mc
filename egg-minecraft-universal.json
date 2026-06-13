@@ -166,46 +166,6 @@
       "user_editable": true,
       "rules": "required|string|in:true,false",
       "field_type": "text"
-    },
-    {
-      "name": "WEB Cloudflare Tunnel Token",
-      "description": "Token khusus untuk meng-online-kan WEB PANEL via domain (HTTPS).\n\nSetup Cloudflare:\n1. Tipe Service: HTTP\n2. URL: localhost:8080 (atau WEB_PORT yang diatur di .env)",
-      "env_variable": "CF_WEB_TUNNEL_TOKEN",
-      "default_value": "",
-      "user_viewable": true,
-      "user_editable": true,
-      "rules": "nullable|string|max:2048",
-      "field_type": "text"
-    },
-    {
-      "name": "Aktifkan Web Panel Frontend",
-      "description": "Menyalakan website landing page (menampilkan info server, player online, dll).\n\nWeb ini akan berjalan di background pada localhost:8080. Sangat cocok jika dihubungkan dengan Cloudflare Tunnel sehingga website bisa diakses melalui domain tanpa port (misal: https://mc.namadomain.com).",
-      "env_variable": "WEB_PANEL_ENABLED",
-      "default_value": "true",
-      "user_viewable": true,
-      "user_editable": true,
-      "rules": "required|string|in:true,false",
-      "field_type": "text"
-    },
-    {
-      "name": "Web Admin Username",
-      "description": "Username rahasia untuk login ke Dashboard Web Panel.",
-      "env_variable": "WEB_ADMIN_USERNAME",
-      "default_value": "admin",
-      "user_viewable": true,
-      "user_editable": true,
-      "rules": "required|string|max:100",
-      "field_type": "text"
-    },
-    {
-      "name": "Web Admin Password",
-      "description": "Password rahasia untuk login ke Dashboard Web Panel.",
-      "env_variable": "WEB_ADMIN_PASSWORD",
-      "default_value": "admin123",
-      "user_viewable": true,
-      "user_editable": true,
-      "rules": "required|string|max:100",
-      "field_type": "text"
     }
   ]
 }

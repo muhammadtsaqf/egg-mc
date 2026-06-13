@@ -159,8 +159,6 @@ jobs:
             type=raw,value=latest,enable=${{ matrix.java_version == '21' }}
             # Tag edge untuk push ke main
             type=raw,value=edge-${{ matrix.tag_suffix }},enable={{is_default_branch}}
-            # Tag SHA pendek
-            type=sha,prefix=sha-,suffix=-${{ matrix.tag_suffix }}
 
       - name: 🏗️ Build dan Push Docker Image
         id: build-push

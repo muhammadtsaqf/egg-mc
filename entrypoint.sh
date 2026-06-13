@@ -30,6 +30,10 @@ MIN_MEMORY="${MIN_MEMORY:-512}"
 JAVA_FLAGS="${JAVA_FLAGS:-}"
 SERVER_PORT="${SERVER_PORT:-25565}"
 STARTUP_TIMEOUT="${STARTUP_TIMEOUT:-120}"
+SERVER_HOST="${SERVER_HOST:-}"
+SERVER_MOTD="${SERVER_MOTD:-§a§lMinecraft Server §r§7| Powered by Pterodactyl}"
+ONLINE_MODE="${ONLINE_MODE:-true}"
+CF_TUNNEL_TOKEN="${CF_TUNNEL_TOKEN:-}"
 
 # Normalisasi huruf kecil
 SERVER_TYPE=$(echo "$SERVER_TYPE" | tr '[:upper:]' '[:lower:]')
@@ -48,7 +52,116 @@ echo -e "  ${BOLD}Server Type${NC} : ${GREEN}$SERVER_TYPE${NC}"
 echo -e "  ${BOLD}MC Version  ${NC} : ${GREEN}$MC_VERSION${NC}"
 echo -e "  ${BOLD}Memori      ${NC} : ${GREEN}${MIN_MEMORY}M - ${MAX_MEMORY}M${NC}"
 echo -e "  ${BOLD}Port        ${NC} : ${GREEN}$SERVER_PORT${NC}"
+if [ -n "$SERVER_HOST" ]; then
+echo -e "  ${BOLD}Host/Domain ${NC} : ${CYAN}$SERVER_HOST:$SERVER_PORT${NC}"
+fi
+echo -e "  ${BOLD}Online Mode ${NC} : ${GREEN}$ONLINE_MODE${NC}"
+if [ -n "$CF_TUNNEL_TOKEN" ]; then
+echo -e "  ${BOLD}CF Tunnel   ${NC} : ${CYAN}✅ Aktif${NC}"
+else
+echo -e "  ${BOLD}CF Tunnel   ${NC} : ${YELLOW}Tidak aktif${NC}"
+fi
 echo ""
+
+# ============================================================
+# CLOUDFLARE TUNNEL
+# ============================================================
+start_cloudflare_tunnel() {
+    if [ -z "$CF_TUNNEL_TOKEN" ]; then
+        return 0
+    fi
+
+    if ! command -v cloudflared &>/dev/null; then
+        warn "cloudflared tidak ditemukan, CF Tunnel dilewati"
+        return 0
+    fi
+
+    step "Memulai Cloudflare Tunnel..."
+    log "Menghubungkan ke Cloudflare Network..."
+
+    # Jalankan cloudflared di background
+    cloudflared tunnel --no-autoupdate run --token "$CF_TUNNEL_TOKEN" \
+        > /tmp/cloudflared.log 2>&1 &
+
+    local cf_pid=$!
+    echo "$cf_pid" > /tmp/cloudflared.pid
+
+    # Tunggu koneksi terbentuk (max 15 detik)
+    local retries=0
+    while [ $retries -lt 15 ]; do
+        if grep -q "Connection .* registered" /tmp/cloudflared.log 2>/dev/null || \
+           grep -q "Registered tunnel connection" /tmp/cloudflared.log 2>/dev/null || \
+           grep -q "conns=1" /tmp/cloudflared.log 2>/dev/null; then
+            success "Cloudflare Tunnel berhasil terhubung!"
+            if [ -n "$SERVER_HOST" ]; then
+                log "Player bisa connect di: ${CYAN}${SERVER_HOST}${NC}"
+            fi
+            return 0
+        fi
+        sleep 1
+        retries=$((retries + 1))
+    done
+
+    # Cek apakah proses masih berjalan
+    if kill -0 "$cf_pid" 2>/dev/null; then
+        warn "Cloudflare Tunnel berjalan (koneksi masih dalam proses)"
+    else
+        warn "Cloudflare Tunnel gagal start. Cek token kamu."
+        warn "Log: $(cat /tmp/cloudflared.log | tail -5)"
+    fi
+}
+
+# ============================================================
+# APPLY KONFIGURASI KE server.properties
+# ============================================================
+apply_server_config() {
+    # Skip untuk server proxy
+    case "$SERVER_TYPE" in
+        bungeecord|bungee|waterfall|velocity)
+            return 0
+            ;;
+    esac
+
+    [ ! -f server.properties ] && return 0
+
+    log "Mengaplikasikan konfigurasi ke server.properties..."
+
+    # Fungsi helper untuk set property
+    set_property() {
+        local key="$1"
+        local value="$2"
+        if grep -q "^${key}=" server.properties 2>/dev/null; then
+            # Gunakan | sebagai delimiter untuk menghindari konflik dengan karakter khusus
+            sed -i "s|^${key}=.*|${key}=${value}|" server.properties
+        else
+            echo "${key}=${value}" >> server.properties
+        fi
+    }
+
+    # Set port
+    set_property "server-port" "$SERVER_PORT"
+
+    # Set online mode
+    set_property "online-mode" "$ONLINE_MODE"
+
+    # Set MotD
+    if [ -n "$SERVER_MOTD" ]; then
+        set_property "motd" "$SERVER_MOTD"
+    fi
+
+    # Jika domain diset, tampilkan info koneksi
+    if [ -n "$SERVER_HOST" ]; then
+        log "Server bisa diakses di: ${CYAN}${SERVER_HOST}:${SERVER_PORT}${NC}"
+        # Tambahkan komentar info di server.properties
+        if ! grep -q "# Host:" server.properties 2>/dev/null; then
+            sed -i "1i # Host: ${SERVER_HOST}:${SERVER_PORT}" server.properties
+        else
+            sed -i "s|# Host:.*|# Host: ${SERVER_HOST}:${SERVER_PORT}|" server.properties
+        fi
+    fi
+
+    success "server.properties berhasil diupdate"
+}
 
 # ============================================================
 # DETEKSI JAVA VERSION YANG TEPAT
@@ -211,6 +324,12 @@ main() {
 
     # Pastikan EULA ada
     ensure_eula
+
+    # Apply konfigurasi server (host, port, motd, online-mode)
+    apply_server_config
+
+    # Mulai Cloudflare Tunnel jika token tersedia
+    start_cloudflare_tunnel
 
     # Pilih Java yang tepat
     JAVA_CMD=$(select_java)

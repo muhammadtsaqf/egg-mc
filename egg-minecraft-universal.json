@@ -146,6 +146,46 @@
       "user_editable": true,
       "rules": "required|numeric|min:60|max:900",
       "field_type": "text"
+    },
+    {
+      "name": "Server Host (Domain)",
+      "description": "Domain atau IP yang digunakan player untuk connect ke server.\n\nContoh:\n• play.azzam.dev\n• mc.namadomain.com\n• 103.xxx.xxx.xxx\n\nBiarkan kosong jika tidak pakai domain khusus.\nNilai ini hanya untuk informasi MotD, tidak mempengaruhi binding IP server.",
+      "env_variable": "SERVER_HOST",
+      "default_value": "",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "nullable|string|max:255",
+      "field_type": "text"
+    },
+    {
+      "name": "Server MotD",
+      "description": "Pesan yang ditampilkan di server list Minecraft (Message of the Day).\n\nSupport warna dengan kode §:\n• §a = Hijau, §b = Aqua, §c = Merah, §e = Kuning\n• §l = Bold, §o = Italic, §n = Underline\n• §r = Reset\n\nContoh: §a§lServer Keren §r§7| §bPlay.Domain.com\n\nDefault: menggunakan nama server otomatis.",
+      "env_variable": "SERVER_MOTD",
+      "default_value": "§a§lMinecraft Server §r§7| Powered by Pterodactyl",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "nullable|string|max:255",
+      "field_type": "text"
+    },
+    {
+      "name": "Online Mode (Autentikasi Mojang)",
+      "description": "Apakah server memverifikasi akun Minecraft ke server Mojang.\n\n• true - Hanya akun Minecraft ASLI yang bisa join (RECOMMENDED untuk keamanan)\n• false - Mode offline, akun bajakan bisa join (cocok untuk server private/LAN)\n\nPerhatian: Jika menggunakan proxy (BungeeCord/Velocity), set ke false di backend server dan aktifkan di proxy.",
+      "env_variable": "ONLINE_MODE",
+      "default_value": "true",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string|in:true,false",
+      "field_type": "text"
+    },
+    {
+      "name": "Cloudflare Tunnel Token",
+      "description": "Token untuk Cloudflare Tunnel agar server bisa diakses via domain tanpa port forward.\n\n📌 Cara mendapatkan token:\n1. Buka https://one.dash.cloudflare.com/\n2. Networks → Tunnels → Create a tunnel\n3. Pilih 'Cloudflared' → beri nama tunnel\n4. Copy token yang muncul (panjang, dimulai dengan 'eyJ...')\n5. Paste di sini\n\n⚙️ Setup domain:\n1. Di dashboard Cloudflare Tunnel, klik tunnel → Configure\n2. Public Hostname → Add a public hostname\n3. Subdomain: play, Domain: namadomainmu.com\n4. Service: TCP → localhost:25565\n5. Klik Save\n\n🎮 Player connect ke: play.namadomainmu.com\n\nBiarkan kosong jika tidak menggunakan Cloudflare Tunnel.",
+      "env_variable": "CF_TUNNEL_TOKEN",
+      "default_value": "",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "nullable|string|max:2048",
+      "field_type": "text"
     }
   ]
 }

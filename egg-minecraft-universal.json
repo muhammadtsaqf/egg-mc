@@ -126,16 +126,7 @@
       "rules": "nullable|string|max:1024",
       "field_type": "text"
     },
-    {
-      "name": "Server Port",
-      "description": "Port yang digunakan server Minecraft.\n\nDefault: 25565 (standar Minecraft)\nProxy (BungeeCord/Velocity): 25577\n\nCatatan: Port ini harus sesuai dengan alokasi port di panel Pterodactyl.",
-      "env_variable": "SERVER_PORT",
-      "default_value": "25565",
-      "user_viewable": true,
-      "user_editable": false,
-      "rules": "required|numeric|min:1024|max:65535",
-      "field_type": "text"
-    },
+
     {
       "name": "Startup Timeout (detik)",
       "description": "Waktu tunggu maksimum (dalam detik) sebelum Pterodactyl menganggap server gagal start.\n\nNaikkan nilai ini jika server kamu butuh waktu lama untuk start (misalnya, server dengan banyak plugin/mod).\n\n• Server vanilla/plugin: 120 detik (2 menit)\n• Server modded/Forge besar: 300-600 detik (5-10 menit)",

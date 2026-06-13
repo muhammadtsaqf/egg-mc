@@ -79,9 +79,15 @@ RUN apt-get update -qq && \
     apt-get install -y --no-install-recommends openjdk-17-jre-headless && \
     \
     # =============================================
-    # Install Java 21 (untuk MC 1.20.5+, default)
+    # Install Java 21 (untuk MC 1.20.5 - 1.21.x)
     # =============================================
     apt-get install -y --no-install-recommends openjdk-21-jre-headless && \
+    \
+    # =============================================
+    # Install Java 25 (untuk MC 1.22+, default untuk versi "latest")
+    # =============================================
+    mkdir -p /opt/java/25 && \
+    curl -sSL "https://api.adoptium.net/v3/binary/latest/25/ga/linux/x64/jre/hotspot/normal/eclipse?project=jdk" | tar -xz --strip-components=1 -C /opt/java/25 && \
     \
     # Cleanup
     apt-get clean && \

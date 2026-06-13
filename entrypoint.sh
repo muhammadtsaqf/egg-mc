@@ -177,8 +177,8 @@ select_java() {
     if [[ "$MC_VERSION" =~ ^1\.([0-9]+) ]]; then
         major_version="${BASH_REMATCH[1]}"
     elif [[ "${MC_VERSION,,}" == "latest" ]]; then
-        # Jika versi "latest", gunakan versi major tertinggi yang saat ini tersedia (MC 1.21+)
-        major_version=21
+        # Jika versi "latest", gunakan versi major tertinggi yang saat ini tersedia (MC 1.22+ butuh Java 25)
+        major_version=25
     fi
 
     local java_cmd="java"
@@ -187,7 +187,14 @@ select_java() {
     # MC 1.17+ butuh Java 16+
     # MC 1.18+ butuh Java 17+
     # MC 1.20.5+ butuh Java 21+
-    if [ "$major_version" -ge 21 ] 2>/dev/null; then
+    # MC 1.22+ butuh Java 25+
+    if [ "$major_version" -ge 25 ] 2>/dev/null; then
+        # MC 1.22+ / Latest - Java 25
+        if command -v /opt/java/25/bin/java &>/dev/null; then
+            java_cmd="/opt/java/25/bin/java"
+        fi
+        log "Menggunakan Java 25 (MC 1.22+ / latest)" >&2
+    elif [ "$major_version" -ge 21 ] 2>/dev/null; then
         # MC 1.21+ - Java 21
         if command -v /usr/lib/jvm/java-21-openjdk-amd64/bin/java &>/dev/null; then
             java_cmd="/usr/lib/jvm/java-21-openjdk-amd64/bin/java"

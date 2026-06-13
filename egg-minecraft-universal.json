@@ -1,0 +1,151 @@
+{
+  "_comment": "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY ANTIGRAVITY EGG PROJECT",
+  "meta": {
+    "version": "PTDL_v2",
+    "update_url": null
+  },
+  "exported_at": "2026-06-13T12:00:00+07:00",
+  "name": "Minecraft Universal",
+  "author": "azzamganteng921@gmail.com",
+  "uuid": "a9c64a1a-0f0a-4e1b-b898-cafe0000beef",
+  "description": "Egg Minecraft Universal - mendukung semua versi Minecraft (Vanilla, Paper, Spigot, Forge, Fabric, Quilt, Purpur) dan semua proxy (BungeeCord, Waterfall, Velocity). Menggunakan Aikar's flags untuk performa optimal.",
+  "features": [
+    "eula",
+    "java_version",
+    "pid_limit"
+  ],
+  "docker_images": {
+    "Java 21 (MC 1.20.5+) [Recommended]": "docker.io/azzamdev17/minecraft-egg:java21",
+    "Java 17 (MC 1.17 - 1.20.4)": "docker.io/azzamdev17/minecraft-egg:java17",
+    "Java 11 (MC 1.12 - 1.16.5)": "docker.io/azzamdev17/minecraft-egg:java11",
+    "Java 8 (MC 1.8 - 1.12.2)": "docker.io/azzamdev17/minecraft-egg:java8",
+    "Latest (Auto-detect)": "docker.io/azzamdev17/minecraft-egg:latest"
+  },
+  "file_denylist": [],
+  "startup": "bash /entrypoint.sh",
+  "config": {
+    "files": "{}",
+    "logs": "{}",
+    "startup": "{\r\n  \"done\": [\r\n    \"For help, type\",\r\n    \"Done (\",\r\n    \"Listening on \",\r\n    \"Enabled. Accepting connections.\"\r\n  ],\r\n  \"userInteraction\": []\r\n}",
+    "stop": "stop"
+  },
+  "scripts": {
+    "installation": {
+      "script": "#!/bin/bash\r\n\r\n# Pterodactyl Egg - Minecraft Universal Install Script\r\n# Dijalankan oleh Wings saat instalasi server\r\n\r\nset -euo pipefail\r\n\r\napt-get update -qq\r\napt-get install -y -qq curl wget jq git unzip\r\n\r\nexport SERVER_TYPE=\"${SERVER_TYPE:-paper}\"\r\nexport MC_VERSION=\"${MC_VERSION:-latest}\"\r\nexport BUILD_NUMBER=\"${BUILD_NUMBER:-latest}\"\r\nexport FORGE_VERSION=\"${FORGE_VERSION:-latest}\"\r\nexport FABRIC_VERSION=\"${FABRIC_VERSION:-latest}\"\r\nexport QUILT_VERSION=\"${QUILT_VERSION:-latest}\"\r\n\r\nbash /mnt/user-data/scripts/install.sh",
+      "container": "docker.io/azzamdev17/minecraft-egg:latest",
+      "entrypoint": "bash"
+    }
+  },
+  "variables": [
+    {
+      "name": "Server Type",
+      "description": "Jenis server Minecraft yang akan dijalankan.\n\n🎮 Game Servers:\n• vanilla - Server Minecraft resmi dari Mojang\n• paper - PaperMC (fork Spigot yang dioptimasi, RECOMMENDED)\n• purpur - Purpur (fork Paper dengan fitur ekstra)\n• spigot - Spigot (Bukkit fork, build lokal via BuildTools)\n• forge - Minecraft Forge (untuk mod)\n• fabric - Fabric Loader (untuk mod modern)\n• quilt - Quilt Loader (fork Fabric)\n\n🌐 Proxy Servers:\n• bungeecord - BungeeCord (proxy klasik)\n• waterfall - Waterfall (fork BungeeCord yang dioptimasi)\n• velocity - Velocity (proxy modern, RECOMMENDED untuk proxy)",
+      "env_variable": "SERVER_TYPE",
+      "default_value": "paper",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string|in:vanilla,paper,purpur,spigot,forge,fabric,quilt,bungeecord,waterfall,velocity",
+      "field_type": "text"
+    },
+    {
+      "name": "Minecraft Version",
+      "description": "Versi Minecraft yang ingin dijalankan.\n\nContoh versi yang valid:\n• latest - Otomatis menggunakan versi terbaru\n• 1.21.4 - Versi spesifik\n• 1.20.6\n• 1.20.1\n• 1.19.4\n• 1.18.2\n• 1.17.1\n• 1.16.5\n• 1.12.2\n• 1.8.8\n\nCatatan: Untuk BungeeCord, Waterfall, dan Velocity, versi ini diabaikan.",
+      "env_variable": "MC_VERSION",
+      "default_value": "latest",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string|max:20",
+      "field_type": "text"
+    },
+    {
+      "name": "Build Number",
+      "description": "Nomor build untuk Paper, Purpur, Waterfall, dan Velocity.\n\n• latest - Otomatis menggunakan build terbaru (RECOMMENDED)\n• Angka - Build number spesifik (contoh: 100, 285)\n\nUntuk Vanilla, Spigot, Forge, Fabric, dan Quilt, variabel ini diabaikan.",
+      "env_variable": "BUILD_NUMBER",
+      "default_value": "latest",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string|max:10",
+      "field_type": "text"
+    },
+    {
+      "name": "Forge Version",
+      "description": "Versi Minecraft Forge yang akan diinstal (hanya untuk SERVER_TYPE=forge).\n\n• latest - Otomatis menggunakan versi terbaru yang tersedia\n• Versi spesifik - contoh: 47.3.0, 43.3.14, 36.2.42\n\nCatatan: Versi Forge harus kompatibel dengan MC_VERSION.",
+      "env_variable": "FORGE_VERSION",
+      "default_value": "latest",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string|max:20",
+      "field_type": "text"
+    },
+    {
+      "name": "Fabric Loader Version",
+      "description": "Versi Fabric Loader yang akan digunakan (hanya untuk SERVER_TYPE=fabric).\n\n• latest - Otomatis menggunakan versi terbaru\n• Versi spesifik - contoh: 0.16.9, 0.15.11\n\nCek versi di: https://meta.fabricmc.net/v2/versions/loader",
+      "env_variable": "FABRIC_VERSION",
+      "default_value": "latest",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string|max:20",
+      "field_type": "text"
+    },
+    {
+      "name": "Quilt Loader Version",
+      "description": "Versi Quilt Loader yang akan digunakan (hanya untuk SERVER_TYPE=quilt).\n\n• latest - Otomatis menggunakan versi terbaru\n• Versi spesifik - contoh: 0.26.4\n\nCek versi di: https://meta.quiltmc.org/v3/versions/loader",
+      "env_variable": "QUILT_VERSION",
+      "default_value": "latest",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string|max:20",
+      "field_type": "text"
+    },
+    {
+      "name": "Maximum Memory (MB)",
+      "description": "Jumlah maksimum RAM yang dialokasikan untuk server (dalam MB).\n\nRekomendasi berdasarkan jumlah pemain:\n• 1-10 pemain: 1024 MB (1 GB)\n• 10-30 pemain: 2048 MB (2 GB)\n• 30-50 pemain: 4096 MB (4 GB)\n• 50-100 pemain: 6144 MB (6 GB)\n• 100+ pemain: 8192 MB (8 GB)\n\nCatatan: Ini adalah nilai untuk -Xmx JVM. Tidak boleh melebihi RAM yang dialokasikan di panel.",
+      "env_variable": "MAX_MEMORY",
+      "default_value": "1024",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|numeric|min:512|max:32768",
+      "field_type": "text"
+    },
+    {
+      "name": "Minimum Memory (MB)",
+      "description": "Jumlah minimum RAM yang dialokasikan untuk server (dalam MB).\n\nNilai ini digunakan untuk -Xms JVM. Disarankan antara 25-50% dari MAX_MEMORY.\n\nDefault: 512 MB",
+      "env_variable": "MIN_MEMORY",
+      "default_value": "512",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|numeric|min:256|max:16384",
+      "field_type": "text"
+    },
+    {
+      "name": "Java Flags Tambahan",
+      "description": "Flag JVM tambahan yang ingin ditambahkan.\n\nBiarkan kosong untuk menggunakan Aikar's Flags secara otomatis (RECOMMENDED).\n\nContoh custom flags:\n-XX:+UseZGC -XX:ZAllocationSpikeTolerance=2\n\nCAUTAN: Jika diisi, Aikar's flags default TIDAK akan digunakan.\nHanya isi ini jika kamu tahu apa yang kamu lakukan.",
+      "env_variable": "JAVA_FLAGS",
+      "default_value": "",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "nullable|string|max:1024",
+      "field_type": "text"
+    },
+    {
+      "name": "Server Port",
+      "description": "Port yang digunakan server Minecraft.\n\nDefault: 25565 (standar Minecraft)\nProxy (BungeeCord/Velocity): 25577\n\nCatatan: Port ini harus sesuai dengan alokasi port di panel Pterodactyl.",
+      "env_variable": "SERVER_PORT",
+      "default_value": "25565",
+      "user_viewable": true,
+      "user_editable": false,
+      "rules": "required|numeric|min:1024|max:65535",
+      "field_type": "text"
+    },
+    {
+      "name": "Startup Timeout (detik)",
+      "description": "Waktu tunggu maksimum (dalam detik) sebelum Pterodactyl menganggap server gagal start.\n\nNaikkan nilai ini jika server kamu butuh waktu lama untuk start (misalnya, server dengan banyak plugin/mod).\n\n• Server vanilla/plugin: 120 detik (2 menit)\n• Server modded/Forge besar: 300-600 detik (5-10 menit)",
+      "env_variable": "STARTUP_TIMEOUT",
+      "default_value": "120",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|numeric|min:60|max:900",
+      "field_type": "text"
+    }
+  ]
+}

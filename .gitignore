@@ -1,0 +1,37 @@
+# Logs
+*.log
+buildtools.log
+forge-install.log
+
+# Build artifacts
+BuildTools.jar
+forge-installer.jar
+quilt-installer.jar
+
+# Server files (jangan commit data server)
+server.jar
+eula.txt
+server.properties
+world/
+world_nether/
+world_the_end/
+logs/
+crash-reports/
+plugins/
+mods/
+config/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temp
+*.tmp
+*.bak

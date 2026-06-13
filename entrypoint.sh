@@ -126,16 +126,17 @@ apply_server_config() {
 
     log "Mengaplikasikan konfigurasi ke server.properties..."
 
-    # Fungsi helper untuk set property
+    # Fungsi helper untuk set property dengan aman (tanpa sed delimiter conflict)
     set_property() {
         local key="$1"
         local value="$2"
         if grep -q "^${key}=" server.properties 2>/dev/null; then
-            # Gunakan | sebagai delimiter untuk menghindari konflik dengan karakter khusus
-            sed -i "s|^${key}=.*|${key}=${value}|" server.properties
-        else
-            echo "${key}=${value}" >> server.properties
+            # Hapus baris konfigurasi yang lama
+            grep -v "^${key}=" server.properties > server.properties.tmp
+            mv server.properties.tmp server.properties
         fi
+        # Tambahkan nilai baru di akhir file
+        echo "${key}=${value}" >> server.properties
     }
 
     # Set port
@@ -153,11 +154,12 @@ apply_server_config() {
     if [ -n "$SERVER_HOST" ]; then
         log "Server bisa diakses di: ${CYAN}${SERVER_HOST}:${SERVER_PORT}${NC}"
         # Tambahkan komentar info di server.properties
-        if ! grep -q "# Host:" server.properties 2>/dev/null; then
-            sed -i "1i # Host: ${SERVER_HOST}:${SERVER_PORT}" server.properties
-        else
-            sed -i "s|# Host:.*|# Host: ${SERVER_HOST}:${SERVER_PORT}|" server.properties
+        if grep -q "^# Host:" server.properties 2>/dev/null; then
+            grep -v "^# Host:" server.properties > server.properties.tmp
+            mv server.properties.tmp server.properties
         fi
+        # Taruh di paling atas file
+        echo "# Host: ${SERVER_HOST}:${SERVER_PORT}" | cat - server.properties > temp && mv temp server.properties
     fi
 
     success "server.properties berhasil diupdate"

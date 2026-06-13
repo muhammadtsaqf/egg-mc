@@ -11,8 +11,7 @@
   "description": "Egg Minecraft Universal - mendukung semua versi Minecraft (Vanilla, Paper, Spigot, Forge, Fabric, Quilt, Purpur) dan semua proxy (BungeeCord, Waterfall, Velocity). Menggunakan Aikar's flags untuk performa optimal.",
   "features": [
     "eula",
-    "java_version",
-    "pid_limit"
+    "java_version"
   ],
   "docker_images": {
     "Java 21 (MC 1.20.5+) [Recommended]": "docker.io/zzamcode17/minecraft-egg:java21",
@@ -25,8 +24,8 @@
   "startup": "bash /entrypoint.sh",
   "config": {
     "files": "{}",
-    "logs": "{}",
-    "startup": "{\r\n  \"done\": [\r\n    \"For help, type\",\r\n    \"Done (\",\r\n    \"Listening on \",\r\n    \"Enabled. Accepting connections.\"\r\n  ],\r\n  \"userInteraction\": []\r\n}",
+    "logs": "{\r\n    \"custom\": false,\r\n    \"location\": \"logs/latest.log\"\r\n}",
+    "startup": "{\r\n    \"done\": \"Done (\",\r\n    \"userInteraction\": []\r\n}",
     "stop": "stop"
   },
   "scripts": {

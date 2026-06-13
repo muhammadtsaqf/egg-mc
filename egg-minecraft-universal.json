@@ -30,7 +30,7 @@
   },
   "scripts": {
     "installation": {
-      "script": "#!/bin/bash\r\n\r\n# Pterodactyl Egg - Minecraft Universal Install Script\r\n# Dijalankan oleh Wings saat instalasi server\r\n\r\nset -euo pipefail\r\n\r\napt-get update -qq\r\napt-get install -y -qq curl wget jq git unzip\r\n\r\nexport SERVER_TYPE=\"${SERVER_TYPE:-paper}\"\r\nexport MC_VERSION=\"${MC_VERSION:-latest}\"\r\nexport BUILD_NUMBER=\"${BUILD_NUMBER:-latest}\"\r\nexport FORGE_VERSION=\"${FORGE_VERSION:-latest}\"\r\nexport FABRIC_VERSION=\"${FABRIC_VERSION:-latest}\"\r\nexport QUILT_VERSION=\"${QUILT_VERSION:-latest}\"\r\n\r\nbash /mnt/user-data/scripts/install.sh",
+      "script": "#!/bin/bash\r\n\r\n# Pterodactyl Egg - Minecraft Universal Install Script\r\n# Dijalankan oleh Wings saat instalasi server\r\n\r\nset -euo pipefail\r\n\r\napt-get update -qq\r\napt-get install -y -qq curl wget jq git unzip\r\n\r\nexport SERVER_TYPE=\"${SERVER_TYPE:-paper}\"\r\nexport MC_VERSION=\"${MC_VERSION:-latest}\"\r\nexport BUILD_NUMBER=\"${BUILD_NUMBER:-latest}\"\r\nexport FORGE_VERSION=\"${FORGE_VERSION:-latest}\"\r\nexport FABRIC_VERSION=\"${FABRIC_VERSION:-latest}\"\r\nexport QUILT_VERSION=\"${QUILT_VERSION:-latest}\"\r\n\r\nbash /install.sh",
       "container": "docker.io/zzamcode17/minecraft-egg:latest",
       "entrypoint": "bash"
     }

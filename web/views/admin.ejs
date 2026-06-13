@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Server Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&family=Fira+Code&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .dashboard-container {
+            width: 95%;
+            max-width: 1000px;
+            text-align: left;
+            padding: 30px;
+        }
+        .dash-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .dash-header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0;
+            text-align: left;
+        }
+        .btn-logout {
+            padding: 8px 15px;
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-logout:hover {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .grid-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .grid-container { grid-template-columns: 1fr; }
+        }
+
+        /* Server Info Sidebar */
+        .info-card {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 20px;
+            height: fit-content;
+        }
+        .info-item {
+            margin-bottom: 15px;
+        }
+        .info-item label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .info-item span {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        /* Terminal / Log Viewer */
+        .terminal-container {
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 500px;
+        }
+        .terminal-header {
+            background: #1a1b26;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #333;
+        }
+        .mac-btn {
+            width: 12px; height: 12px; border-radius: 50%;
+        }
+        .close { background: #ff5f56; }
+        .min { background: #ffbd2e; }
+        .max { background: #27c93f; }
+        
+        .terminal-title {
+            color: #a9b1d6;
+            font-size: 0.85rem;
+            font-family: 'Fira Code', monospace;
+            margin-left: 10px;
+        }
+
+        .terminal-body {
+            padding: 15px;
+            overflow-y: auto;
+            flex-grow: 1;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: #a9b1d6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Scrollbar Terminal */
+        .terminal-body::-webkit-scrollbar { width: 8px; }
+        .terminal-body::-webkit-scrollbar-track { background: #000; }
+        .terminal-body::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="background-animation"></div>
+    
+    <div class="glass-container dashboard-container">
+        <div class="dash-header">
+            <h1>Admin Dashboard</h1>
+            <a href="/logout" class="btn-logout">Logout</a>
+        </div>
+
+        <div class="grid-container">
+            <!-- Sidebar Info -->
+            <div class="info-card">
+                <div class="info-item">
+                    <label>Server Host</label>
+                    <span><%= host %>:<%= port %></span>
+                </div>
+                <div class="info-item">
+                    <label>Server Type</label>
+                    <span style="text-transform: capitalize;"><%= type %></span>
+                </div>
+                <div class="info-item">
+                    <label>Live Status</label>
+                    <span id="player-count">Loading...</span>
+                </div>
+            </div>
+
+            <!-- Terminal / Log Viewer -->
+            <div class="terminal-container">
+                <div class="terminal-header">
+                    <div class="mac-btn close"></div>
+                    <div class="mac-btn min"></div>
+                    <div class="mac-btn max"></div>
+                    <span class="terminal-title">~/logs/latest.log — Live Console</span>
+                </div>
+                <div class="terminal-body" id="terminal-output">
+                    Memuat log dari server...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const terminalOutput = document.getElementById('terminal-output');
+        
+        // Fetch Server Status
+        async function fetchStatus() {
+            try {
+                const res = await fetch('/api/status');
+                const data = await res.json();
+                const text = document.getElementById('player-count');
+                if(data.online) {
+                    text.textContent = `${data.players.online} / ${data.players.max} Online`;
+                    text.style.color = '#10b981';
+                } else {
+                    text.textContent = 'Offline';
+                    text.style.color = '#ef4444';
+                }
+            } catch(e) {}
+        }
+
+        // Fetch Live Logs
+        async function fetchLogs() {
+            try {
+                const res = await fetch('/api/logs');
+                const text = await res.text();
+                
+                // Cek jika user sedang scroll ke atas (jangan paksa scroll ke bawah)
+                const isScrolledToBottom = terminalOutput.scrollHeight - terminalOutput.clientHeight <= terminalOutput.scrollTop + 50;
+
+                terminalOutput.textContent = text;
+
+                // Auto scroll ke bawah jika sebelumnya di bawah
+                if (isScrolledToBottom) {
+                    terminalOutput.scrollTop = terminalOutput.scrollHeight;
+                }
+            } catch(e) {
+                console.error("Gagal mengambil log");
+            }
+        }
+
+        fetchStatus();
+        fetchLogs();
+        
+        setInterval(fetchStatus, 10000); // 10 detik
+        setInterval(fetchLogs, 3000);    // 3 detik update log
+    </script>
+</body>
+</html>

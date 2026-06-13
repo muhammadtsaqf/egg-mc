@@ -57,7 +57,11 @@ RUN apt-get update -qq && \
         git \
         # Python untuk beberapa tools
         python3 \
-        python3-pip \
+        python3-pip && \
+    \
+    # Install Node.js untuk Web Panel
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs \
     && \
     # Setup locale Indonesia
     locale-gen id_ID.UTF-8 && \
@@ -110,12 +114,16 @@ RUN apt-get update -qq && \
 RUN useradd -d /home/container -m container --uid 1000 --shell /bin/bash
 
 # ============================================================
-# COPY SCRIPTS
+# COPY SCRIPTS & WEB PANEL
 # ============================================================
 COPY --chown=container:container entrypoint.sh /entrypoint.sh
 COPY --chown=container:container install.sh /install.sh
+COPY --chown=container:container web /opt/minecraft-web
 
-RUN chmod +x /entrypoint.sh /install.sh
+RUN chmod +x /entrypoint.sh /install.sh && \
+    cd /opt/minecraft-web && \
+    npm install && \
+    chown -R container:container /opt/minecraft-web
 
 # ============================================================
 # WORKING DIRECTORY

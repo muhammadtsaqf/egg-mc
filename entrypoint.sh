@@ -344,6 +344,22 @@ main() {
     # Mulai Cloudflare Tunnel jika token tersedia
     start_cloudflare_tunnel
 
+    # Mulai Web Panel Frontend jika diaktifkan
+    if [ "${WEB_PANEL_ENABLED,,}" == "true" ]; then
+        log "Memulai Web Frontend (Node.js) di background (port 8080)..."
+        # Export semua variable penting agar terbaca oleh Node.js
+        export SERVER_PORT="${SERVER_PORT:-25565}"
+        export SERVER_HOST="${SERVER_HOST:-127.0.0.1}"
+        export MC_VERSION="${MC_VERSION:-latest}"
+        export SERVER_TYPE="${SERVER_TYPE:-vanilla}"
+        export SERVER_MOTD="${SERVER_MOTD:-Minecraft Server}"
+        export WEB_ADMIN_USERNAME="${WEB_ADMIN_USERNAME:-admin}"
+        export WEB_ADMIN_PASSWORD="${WEB_ADMIN_PASSWORD:-admin123}"
+        
+        # Pindah ke web direktori, jalankan npm start di background, lalu kembali
+        (cd /opt/minecraft-web && npm start > /dev/null 2>&1 &)
+    fi
+
     # Pilih Java yang tepat
     JAVA_CMD=$(select_java)
 

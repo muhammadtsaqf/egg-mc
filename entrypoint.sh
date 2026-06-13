@@ -176,6 +176,9 @@ select_java() {
     # Extract major version number dari MC_VERSION (e.g., 1.21.4 -> 21)
     if [[ "$MC_VERSION" =~ ^1\.([0-9]+) ]]; then
         major_version="${BASH_REMATCH[1]}"
+    elif [[ "${MC_VERSION,,}" == "latest" ]]; then
+        # Jika versi "latest", gunakan versi major tertinggi yang saat ini tersedia (MC 1.21+)
+        major_version=21
     fi
 
     local java_cmd="java"

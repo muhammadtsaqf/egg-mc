@@ -173,6 +173,7 @@ start_cloudflare_tunnel() {
     if command -v cloudflared &>/dev/null; then
         if [ -n "${CF_WEB_TUNNEL_TOKEN:-}" ]; then
             log "Menjalankan Cloudflare Tunnel (Web Panel) di background..."
+            mkdir -p /home/container/logs
             cloudflared tunnel run --token "$CF_WEB_TUNNEL_TOKEN" > /home/container/logs/cloudflared-web.log 2>&1 &
         fi
     else
@@ -189,11 +190,15 @@ select_java() {
     # Deteksi versi Java berdasarkan versi Minecraft
     local major_version=0
 
-    # Extract major version number dari MC_VERSION (e.g., 1.21.4 -> 21)
-    if [[ "$MC_VERSION" =~ ^1\.([0-9]+) ]]; then
+    # Extract major version number
+    if [[ "$MC_VERSION" =~ ^([0-9]{2,})\. ]]; then
+        # Support format versi baru (e.g., 26.1.2 -> 26)
+        major_version="${BASH_REMATCH[1]}"
+    elif [[ "$MC_VERSION" =~ ^1\.([0-9]+) ]]; then
+        # Format versi lama (e.g., 1.21.4 -> 21)
         major_version="${BASH_REMATCH[1]}"
     elif [[ "${MC_VERSION,,}" == "latest" ]]; then
-        # Jika versi "latest", gunakan versi major tertinggi yang saat ini tersedia (MC 1.22+ butuh Java 25)
+        # Jika versi "latest", gunakan versi major tertinggi
         major_version=25
     fi
 

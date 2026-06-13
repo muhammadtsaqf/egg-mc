@@ -167,6 +167,27 @@ apply_server_config() {
 }
 
 # ============================================================
+# CLOUDFLARE TUNNEL
+# ============================================================
+start_cloudflare_tunnel() {
+    if command -v cloudflared &>/dev/null; then
+        if [ -n "${CF_TUNNEL_TOKEN:-}" ]; then
+            log "Menjalankan Cloudflare Tunnel (Minecraft) di background..."
+            cloudflared tunnel run --token "$CF_TUNNEL_TOKEN" > /home/container/logs/cloudflared-mc.log 2>&1 &
+        fi
+        
+        if [ -n "${CF_WEB_TUNNEL_TOKEN:-}" ]; then
+            log "Menjalankan Cloudflare Tunnel (Web Panel) di background..."
+            cloudflared tunnel run --token "$CF_WEB_TUNNEL_TOKEN" > /home/container/logs/cloudflared-web.log 2>&1 &
+        fi
+    else
+        if [ -n "${CF_TUNNEL_TOKEN:-}" ] || [ -n "${CF_WEB_TUNNEL_TOKEN:-}" ]; then
+            warn "Token Cloudflare terdeteksi, tetapi binary 'cloudflared' tidak ditemukan di dalam sistem!"
+        fi
+    fi
+}
+
+# ============================================================
 # DETEKSI JAVA VERSION YANG TEPAT
 # ============================================================
 select_java() {

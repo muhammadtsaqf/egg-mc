@@ -46,13 +46,9 @@ echo ""
 # ============================================================
 
 install_dependencies() {
-    step "Menginstal dependensi..."
-    if command -v apt-get &>/dev/null; then
-        apt-get update -qq && apt-get install -y -qq curl wget jq unzip > /dev/null 2>&1
-    elif command -v apk &>/dev/null; then
-        apk add --no-cache curl wget jq unzip > /dev/null 2>&1
-    fi
-    success "Dependensi terinstal"
+    # Dependensi sudah diinstal langsung di dalam Docker image
+    # Fungsi ini dibiarkan kosong agar tidak memunculkan pesan error "Read-only file system"
+    :
 }
 
 get_latest_minecraft_version() {
@@ -189,6 +185,14 @@ install_vanilla() {
 install_paper() {
     step "Menginstal PaperMC..."
     resolve_mc_version
+
+    # [WORKAROUND] Bypass khusus untuk versi 26.1.2 (Karena API PaperMC belum update)
+    if [ "$MC_VERSION" = "26.1.2" ]; then
+        log "Mendownload Paper 26.1.2 (Early Access Build #69)..."
+        curl -sSL -o server.jar "https://github.com/muhammadtsaqf/egg-mc/raw/main/paper/paper-26.1.2-69.jar"
+        success "Paper 26.1.2 build #69 berhasil didownload secara manual!"
+        return 0
+    fi
 
     local api_url="https://api.papermc.io/v2/projects/paper/versions/$MC_VERSION"
     local builds_json

@@ -30,7 +30,7 @@
   },
   "scripts": {
     "installation": {
-      "script": "#!/bin/bash\r\n\r\n# Pterodactyl Egg - Minecraft Universal Install Script\r\n# Dijalankan oleh Wings saat instalasi server\r\n\r\nset -euo pipefail\r\n\r\napt-get update -qq\r\napt-get install -y -qq curl wget jq git unzip\r\n\r\nexport SERVER_TYPE=\"${SERVER_TYPE:-paper}\"\r\nexport MC_VERSION=\"${MC_VERSION:-latest}\"\r\nexport BUILD_NUMBER=\"${BUILD_NUMBER:-latest}\"\r\nexport FORGE_VERSION=\"${FORGE_VERSION:-latest}\"\r\nexport FABRIC_VERSION=\"${FABRIC_VERSION:-latest}\"\r\nexport QUILT_VERSION=\"${QUILT_VERSION:-latest}\"\r\n\r\nbash /install.sh",
+      "script": "#!/bin/bash\r\n\r\n# Pterodactyl Egg - Minecraft Universal Install Script\r\n# Dijalankan oleh Wings saat instalasi server\r\n\r\nset -euo pipefail\r\n\r\n# Mendownload install.sh terbaru langsung dari GitHub agar selalu up-to-date\r\n# dan tidak perlu menunggu proses build Docker Image selesai.\r\ncurl -sSL https://raw.githubusercontent.com/muhammadtsaqf/egg-mc/main/install.sh -o /install.sh\r\n\r\nexport SERVER_TYPE=\"${SERVER_TYPE:-paper}\"\r\nexport MC_VERSION=\"${MC_VERSION:-latest}\"\r\nexport BUILD_NUMBER=\"${BUILD_NUMBER:-latest}\"\r\nexport FORGE_VERSION=\"${FORGE_VERSION:-latest}\"\r\nexport FABRIC_VERSION=\"${FABRIC_VERSION:-latest}\"\r\nexport QUILT_VERSION=\"${QUILT_VERSION:-latest}\"\r\n\r\nbash /install.sh",
       "container": "docker.io/zzamcode17/minecraft-egg:latest",
       "entrypoint": "bash"
     }
@@ -168,9 +168,19 @@
       "field_type": "text"
     },
     {
-      "name": "Cloudflare Tunnel Token",
-      "description": "Token untuk Cloudflare Tunnel agar server bisa diakses via domain tanpa port forward.\n\n📌 Cara mendapatkan token:\n1. Buka https://one.dash.cloudflare.com/\n2. Networks → Tunnels → Create a tunnel\n3. Pilih 'Cloudflared' → beri nama tunnel\n4. Copy token yang muncul (panjang, dimulai dengan 'eyJ...')\n5. Paste di sini\n\n⚙️ Setup domain:\n1. Di dashboard Cloudflare Tunnel, klik tunnel → Configure\n2. Public Hostname → Add a public hostname\n3. Subdomain: play, Domain: namadomainmu.com\n4. Service: TCP → localhost:25565\n5. Klik Save\n\n🎮 Player connect ke: play.namadomainmu.com\n\nBiarkan kosong jika tidak menggunakan Cloudflare Tunnel.",
+      "name": "MC Cloudflare Tunnel Token",
+      "description": "Token khusus untuk meng-online-kan SERVER MINECRAFT via domain.\n\nSetup Cloudflare:\n1. Tipe Service: TCP\n2. URL: localhost:25565 (atau port utama servermu)",
       "env_variable": "CF_TUNNEL_TOKEN",
+      "default_value": "",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "nullable|string|max:2048",
+      "field_type": "text"
+    },
+    {
+      "name": "WEB Cloudflare Tunnel Token",
+      "description": "Token khusus untuk meng-online-kan WEB PANEL via domain (HTTPS).\n\nSetup Cloudflare:\n1. Tipe Service: HTTP\n2. URL: localhost:8080 (atau WEB_PORT yang diatur di .env)",
+      "env_variable": "CF_WEB_TUNNEL_TOKEN",
       "default_value": "",
       "user_viewable": true,
       "user_editable": true,

@@ -59,6 +59,10 @@ RUN apt-get update -qq && \
         python3 \
         python3-pip && \
     \
+    # Install Cloudflared
+    wget -q https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -O /usr/local/bin/cloudflared && \
+    chmod +x /usr/local/bin/cloudflared && \
+    \
     # Install Node.js untuk Web Panel
     curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs \
